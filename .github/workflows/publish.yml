@@ -9,13 +9,17 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Download signed APK artifact
+      - name: Download latest signed APK
         run: |
-          curl --fail --location 'https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-8468-8211-98fd-eff68062a2c8/raw?se=2026-11-16T07%3A11%3A50Z&sp=r&sv=2026-06-06&sr=b&scid=55d5750a-83a4-5b83-946a-3fa53f8f8dd2&skoid=37f774a3-b6f2-4e56-9fdd-339e5d6e97f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-16T03%3A36%3A27Z&ske=2026-11-17T03%3A36%3A27Z&sks=b&skv=2026-06-06&sig=kk98fPAwvEtqt1HAt6dFCp1tocJOwhtuH7W6aGm66TA%3D' --output artifact.zip
+          curl --fail --location 'https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-cf84-8211-8a9f-db434c566597/raw?se=2026-11-16T07%3A33%3A34Z&sp=r&sv=2026-06-06&sr=b&scid=55cd052c-b840-5e30-aa97-67ccd77e37ea&skoid=37f774a3-b6f2-4e56-9fdd-339e5d6e97f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-15T23%3A47%3A33Z&ske=2026-11-16T23%3A47%3A33Z&sks=b&skv=2026-06-06&sig=phxW0BINPXbN0AqcQ8Zle0H%2Buvm5tGio596Fop5KjD0%3D' --output artifact.zip
           unzip -j artifact.zip app-release.apk -d release
           test -s release/app-release.apk
-      - name: Publish public APK release
+      - name: Publish Amar Hisab 1.6
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v1.5 release/app-release.apk --repo "${GITHUB_REPOSITORY}" --title "Amar Hisab 1.5" --notes "In-app update checker, verified APK download, and installer flow."
+          sha256=$(sha256sum release/app-release.apk | cut -d ' ' -f 1)
+          gh release create v1.6 release/app-release.apk --repo "${GITHUB_REPOSITORY}" --title "Amar Hisab 1.6" --notes "Updated build with installer and update verification fixes."
+          printf '{"versionCode":7,"versionName":"1.6","apkUrl":"https://github.com/mahabuburrahaman402-hue/-Amar-hisab/releases/download/v1.6/app-release.apk","sha256":"%s","releaseNotes":"আপডেট যাচাই ও ইনস্টল প্রক্রিয়া সংশোধনসহ নতুন সংস্করণ।"}\n' "$sha256" > latest.json
+          old_sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/latest.json" --jq .sha)
+          gh api "repos/${GITHUB_REPOSITORY}/contents/latest.json" -X PUT -f message="Update Amar Hisab 1.6 manifest" -f sha="$old_sha" -f content="$(base64 -w0 latest.json)"
