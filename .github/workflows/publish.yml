@@ -10,11 +10,11 @@ jobs:
     steps:
       - name: Download signed APK artifact
         run: |
-          curl --fail --location 'https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-363c-8211-8c01-f08c93456205/raw?se=2026-11-16T05%3A43%3A15Z&sp=r&sv=2026-06-06&sr=b&scid=ea3e3dec-d1bb-54c3-88d6-ce1b7970b6bf&skoid=37f774a3-b6f2-4e56-9fdd-339e5d6e97f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-16T02%3A02%3A28Z&ske=2026-11-17T02%3A02%3A28Z&sks=b&skv=2026-06-06&sig=r2XAo8GZe6hTFNEKEUS7CuDFTZbYjzAnneY735wid/k%3D' --output artifact.zip
+          curl --fail --location 'https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-e1c8-8211-8db5-89b2c5458bc8/raw?se=2026-11-16T05%3A47%3A34Z&sp=r&sv=2026-06-06&sr=b&scid=e7c534ea-e0f8-54d7-b07a-906dea27af1b&skoid=37f774a3-b6f2-4e56-9fdd-339e5d6e97f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-15T23%3A00%3A33Z&ske=2026-11-16T23%3A00%3A33Z&sks=b&skv=2026-06-06&sig=Ir3zsJJ4MpNJsBKuG8XTny0N/CHllsSYpprQsRQKdLM%3D' --output artifact.zip
           unzip -j artifact.zip app-release.apk -d release
           test -s release/app-release.apk
       - name: Publish public APK release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v1.4 release/app-release.apk --repo "${GITHUB_REPOSITORY}" --title "Amar Hisab 1.4" --notes "Initial public APK delivery for the in-app update channel."
+          gh release create v1.5 release/app-release.apk --repo "${GITHUB_REPOSITORY}" --title "Amar Hisab 1.5" --notes "In-app update checker, verified APK download, and installer flow."
