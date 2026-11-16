@@ -1,7 +1,7 @@
 {
-  "versionCode": 5,
-  "versionName": "1.4",
-  "apkUrl": "https://github.com/mahabuburrahaman402-hue/-Amar-hisab/releases/download/v1.4/app-release.apk",
-  "sha256": "acf129167b0d2790f83ea6fcf8913bd8de100541c957770dec839a39a89b1875",
-  "releaseNotes": "Approved Amar Hisab logo and signed release."
+  "versionCode": 6,
+  "versionName": "1.5",
+  "apkUrl": "https://github.com/mahabuburrahaman402-hue/-Amar-hisab/releases/download/v1.5/app-release.apk",
+  "sha256": "f1b9bc65b9c49c7f16dfdf0bff4484b8083bb66fbd760933b3c74c36399e9ded",
+  "releaseNotes": "ড্যাশবোর্ডে আপডেট চেক, নিরাপদ APK ডাউনলোড, SHA-256 যাচাই এবং ইনস্টল ব্যবস্থা যোগ করা হয়েছে।"
 }
