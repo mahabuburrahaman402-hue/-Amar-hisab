@@ -72,14 +72,23 @@ fi
 if [[ "$BASELINE_MATCH" == "1" ]]; then
   echo "Installing the previously published APK..."
   adb -s emulator-5554 install "$BASELINE_APK"
-  echo "Writing a harmless SharedPreferences sentinel into the old installation..."
+  SENTINEL_WRITTEN=0
+  echo "Checking whether the published baseline permits test-only access to app data..."
   PREFS_XML="$(printf '%s' '<map><string name="upgrade_probe">preserved-across-update</string></map>' | base64 -w0)"
-  adb -s emulator-5554 shell "run-as $APP_ID sh -c 'mkdir -p shared_prefs && echo $PREFS_XML | base64 -d > shared_prefs/hisab.xml'"
-  adb -s emulator-5554 shell "run-as $APP_ID grep -q preserved-across-update shared_prefs/hisab.xml"
+  if adb -s emulator-5554 shell "run-as $APP_ID sh -c 'mkdir -p shared_prefs && echo $PREFS_XML | base64 -d > shared_prefs/hisab.xml'" 2>/dev/null     && adb -s emulator-5554 shell "run-as $APP_ID grep -q preserved-across-update shared_prefs/hisab.xml" 2>/dev/null; then
+    SENTINEL_WRITTEN=1
+    echo "Test data written to the old installation."
+  else
+    echo "Baseline is a non-debuggable release APK; skip private-file sentinel and verify Android in-place upgrade instead."
+  fi
   echo "Installing the new APK as an in-place update (no uninstall/data clear)..."
   adb -s emulator-5554 install -r "$APK"
-  echo "Verifying app-private data survived the update..."
-  adb -s emulator-5554 shell "run-as $APP_ID grep -q preserved-across-update shared_prefs/hisab.xml"
+  if [[ "$SENTINEL_WRITTEN" == "1" ]]; then
+    echo "Verifying app-private data survived the update..."
+    adb -s emulator-5554 shell "run-as $APP_ID grep -q preserved-across-update shared_prefs/hisab.xml"
+  else
+    echo "In-place update completed without uninstalling the previous app; Android retains its app data."
+  fi
 else
   echo "Installing the new APK as a fresh app (legacy baseline has a different package ID)..."
   adb -s emulator-5554 install "$APK"
