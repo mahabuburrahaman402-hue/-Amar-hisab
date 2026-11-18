@@ -1641,7 +1641,7 @@ public class MainActivity extends Activity {
         content.addView(text("অ্যাপের ভাষা, ডিজাইন, নিরাপত্তা ও ডেটা নিয়ন্ত্রণ", 16));
 
         content.addView(text("অ্যাপ আপডেট", 19));
-        Button update = button("আপডেট");
+        Button update = button("আপডেট ভার্সন");
         update.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.rgb(34, 139, 69)));
         update.setTextSize(16);
         update.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -6806,14 +6806,10 @@ public class MainActivity extends Activity {
                         .setTitle(ui("আপডেট")).setMessage(ui("আপনার অ্যাপটি সর্বশেষ সংস্করণে আছে।"))
                         .setPositiveButton(ui("ঠিক আছে"), null).show());
                 } else {
-                    runOnUiThread(() -> new AlertDialog.Builder(this)
-                        .setTitle(ui("নতুন আপডেট পাওয়া গেছে"))
-                        .setMessage(ui("নতুন সংস্করণ: ") + name + "\n" + ui("বর্তমান সংস্করণ: ") + installed +
-                            (notes.isEmpty() ? "" : "\n\n" + notes) +
-                            "\n\n" + ui("আপডেট করুন চাপলে APK এই অ্যাপের ভেতরে ডাউনলোড ও যাচাই হবে। ইনস্টলের আগে Android-এর অনুমতি ও নিশ্চিতকরণ লাগবে।"))
-                        .setNegativeButton(ui("পরে"), null)
-                        .setPositiveButton(ui("আপডেট করুন"), (d, w) -> downloadAndInstallUpdate(apk, hash))
-                        .show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, ui("নতুন সংস্করণ ") + name + ui(" পাওয়া গেছে; আপডেট ডাউনলোড হচ্ছে"), Toast.LENGTH_LONG).show();
+                        downloadAndInstallUpdate(apk, hash);
+                    });
                 }
             } catch (Exception e) {
                 if (showNoUpdate) runOnUiThread(() -> Toast.makeText(this,
