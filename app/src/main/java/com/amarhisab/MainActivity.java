@@ -1641,7 +1641,10 @@ public class MainActivity extends Activity {
         content.addView(text("অ্যাপের ভাষা, ডিজাইন, নিরাপত্তা ও ডেটা নিয়ন্ত্রণ", 16));
 
         content.addView(text("অ্যাপ আপডেট", 19));
-        Button update = button("নতুন আপডেট খুঁজুন");
+        Button update = button("আপডেট");
+        update.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.rgb(34, 139, 69)));
+        update.setTextSize(16);
+        update.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         content.addView(update);
         update.setOnClickListener(v -> checkForUpdates(true));
 
@@ -6766,7 +6769,7 @@ public class MainActivity extends Activity {
             java.net.HttpURLConnection c = null;
             try {
                 c = (java.net.HttpURLConnection) new java.net.URL(
-                    "https://raw.githubusercontent.com/mahabuburrahaman402-hue/Amar-hisab/main/latest.json").openConnection();
+                    "https://raw.githubusercontent.com/mahabuburrahaman402-hue/-Amar-hisab/main/latest.json").openConnection();
                 c.setConnectTimeout(12000);
                 c.setReadTimeout(12000);
                 c.setRequestProperty("Cache-Control", "no-cache");
@@ -6789,7 +6792,7 @@ public class MainActivity extends Activity {
                 String path = u.getPath() == null ? "" : u.getPath();
                 boolean trusted = "https".equalsIgnoreCase(u.getScheme()) &&
                     "github.com".equalsIgnoreCase(u.getHost()) &&
-                    path.startsWith("/mahabuburrahaman402-hue/Amar-hisab/releases/download/");
+                    path.startsWith("/mahabuburrahaman402-hue/-Amar-hisab/releases/download/");
                 if (latest <= 0 || !trusted || !hash.matches("[0-9a-f]{64}") || name.trim().isEmpty())
                     throw new java.io.IOException("Invalid update metadata");
                 long current = 0;
