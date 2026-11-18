@@ -29,8 +29,12 @@ echo "Baseline APK downloaded successfully: $(stat -c%s "$BASELINE_APK") bytes"
 # Inspect both APK manifests before attempting an in-place update.
 AAPT="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n1)"
 if [[ -z "$AAPT" ]]; then echo "Android build-tools aapt was not found."; exit 1; fi
-BASELINE_APP_ID="$("$AAPT" dump badging "$BASELINE_APK" | head -n1 | cut -d "\047" -f2)"
-NEW_APK_APP_ID="$("$AAPT" dump badging "$APK" | head -n1 | cut -d "\047" -f2)"
+BASELINE_APP_ID="$("$AAPT" dump badging "$BASELINE_APK" | sed -n "1s/.*package: name=\x27\([^\x27]*\)\x27.*/\1/p")"
+NEW_APK_APP_ID="$("$AAPT" dump badging "$APK" | sed -n "1s/.*package: name=\x27\([^\x27]*\)\x27.*/\1/p")"
+if [[ -z "$BASELINE_APP_ID" || -z "$NEW_APK_APP_ID" ]]; then
+  echo "ERROR: Could not read package IDs from APK manifests."
+  exit 1
+fi
 echo "Baseline package: $BASELINE_APP_ID"
 echo "New APK package: $NEW_APK_APP_ID"
 if [[ "$NEW_APK_APP_ID" != "$NEW_APP_ID" ]]; then echo "Unexpected new APK package ID."; exit 1; fi
