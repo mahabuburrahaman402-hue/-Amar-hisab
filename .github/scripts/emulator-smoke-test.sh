@@ -15,11 +15,11 @@ fi
 
 APP_ID="com.amarhisab.app"
 ACTIVITY="com.amarhisab.MainActivity"
-BASELINE_APK="$RUNNER_TEMP/Amar-Hisab.apk"
+BASELINE_APK="$RUNNER_TEMP/app-release.apk"
 
-echo "Downloading the last published baseline APK (v2.0.6) using the workflow token..."
-: "${GH_TOKEN:?GitHub Actions token is required to download the private release asset}"
-if ! timeout 180s env GH_PROMPT_DISABLED=1 gh release download v2.0.6 --repo "$GITHUB_REPOSITORY" --pattern "Amar-Hisab.apk" --dir "$RUNNER_TEMP"; then
+echo "Downloading the latest published baseline APK (v1.6) from this repository..."
+: "${GH_TOKEN:?GitHub Actions token is required to download the baseline release asset}"
+if ! timeout 180s env GH_PROMPT_DISABLED=1 gh release download v1.6 --repo "$GITHUB_REPOSITORY" --pattern "app-release.apk" --dir "$RUNNER_TEMP"; then
   echo "ERROR: baseline APK download failed or exceeded the 180-second limit."
   exit 1
 fi
@@ -96,7 +96,7 @@ adb -s emulator-5554 shell dumpsys activity activities > "$RUNNER_TEMP/amar-hisa
 echo "In-place update preserved app-private data and updated MainActivity reached foreground. PID: $PID"
 {
   echo "### Emulator update validation"
-  echo "Installed v2.0.6, wrote a private SharedPreferences sentinel, then installed the new APK using adb install -r."
+  echo "Installed baseline v1.6, wrote a private SharedPreferences sentinel, then installed the new APK using adb install -r."
   echo "The sentinel survived the update; no uninstall or app-data clear was performed."
   echo
   echo "Updated app process ID: $PID"
