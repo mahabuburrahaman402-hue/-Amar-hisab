@@ -14,7 +14,7 @@ if [[ -z "$APK" || ! -s "$APK" ]]; then
 fi
 
 BASELINE_APK="$RUNNER_TEMP/app-release.apk"
-NEW_APP_ID="com.amarhisab.app"
+NEW_APP_ID="com.amarhisab"
 ACTIVITY="com.amarhisab.MainActivity"
 
 echo "Downloading the latest published baseline APK (v1.6) from this repository..."
