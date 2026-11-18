@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         // Preserve the existing Android app identity so updates can replace the installed app.
-        applicationId 'com.amarhisab.app'
+        applicationId 'com.amarhisab'
         minSdk 23
         targetSdk 35
         versionCode appVersionCode
