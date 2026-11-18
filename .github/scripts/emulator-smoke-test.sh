@@ -13,9 +13,9 @@ if [[ -z "$APK" || ! -s "$APK" ]]; then
   exit 1
 fi
 
-APP_ID="com.amarhisab.app"
-ACTIVITY="com.amarhisab.MainActivity"
 BASELINE_APK="$RUNNER_TEMP/app-release.apk"
+NEW_APP_ID="com.amarhisab.app"
+ACTIVITY="com.amarhisab.MainActivity"
 
 echo "Downloading the latest published baseline APK (v1.6) from this repository..."
 : "${GH_TOKEN:?GitHub Actions token is required to download the baseline release asset}"
@@ -25,6 +25,20 @@ if ! timeout 180s env GH_PROMPT_DISABLED=1 gh release download v1.6 --repo "$GIT
 fi
 test -s "$BASELINE_APK"
 echo "Baseline APK downloaded successfully: $(stat -c%s "$BASELINE_APK") bytes"
+
+# Inspect both APK manifests before attempting an in-place update.
+AAPT="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n1)"
+if [[ -z "$AAPT" ]]; then echo "Android build-tools aapt was not found."; exit 1; fi
+BASELINE_APP_ID="$("$AAPT" dump badging "$BASELINE_APK" | head -n1 | cut -d "\047" -f2)"
+NEW_APK_APP_ID="$("$AAPT" dump badging "$APK" | head -n1 | cut -d "\047" -f2)"
+echo "Baseline package: $BASELINE_APP_ID"
+echo "New APK package: $NEW_APK_APP_ID"
+if [[ "$NEW_APK_APP_ID" != "$NEW_APP_ID" ]]; then echo "Unexpected new APK package ID."; exit 1; fi
+if [[ "$BASELINE_APP_ID" != "$NEW_APK_APP_ID" ]]; then
+  echo "Baseline release package differs; an in-place upgrade test requires a release built with $NEW_APP_ID."
+  exit 1
+fi
+APP_ID="$NEW_APK_APP_ID"
 
 echo "Waiting for Android emulator core services..."
 READY=0
