@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.application'
+}
+
+def appVersionCode = project.hasProperty('appVersionCode') ? project.property('appVersionCode').toString().toInteger() : 110
+def appVersionName = project.hasProperty('appVersionName') ? project.property('appVersionName').toString() : '2.1.0'
+
+def releaseStoreFile = System.getenv('RELEASE_STORE_FILE')
+def releaseStorePassword = System.getenv('RELEASE_STORE_PASSWORD')
+def releaseKeyAlias = System.getenv('RELEASE_KEY_ALIAS')
+def releaseKeyPassword = System.getenv('RELEASE_KEY_PASSWORD')
+def hasReleaseSigning = [releaseStoreFile, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it != null && !it.isEmpty() }
+
+android {
+    namespace 'com.amarhisab'
+    compileSdk 35
+
+    defaultConfig {
+        // Preserve the existing Android app identity so updates can replace the installed app.
+        applicationId 'com.amarhisab.app'
+        minSdk 23
+        targetSdk 35
+        versionCode appVersionCode
+        versionName appVersionName
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
+            minifyEnabled false
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.13.1'
+    testImplementation 'junit:junit:4.13.2'
+}
